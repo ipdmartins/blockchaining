@@ -19,18 +19,26 @@ contract KittyInterface {
 
 contract ZombieFeeding is ZombieFactory {
 
-  address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
-  KittyInterface kittyContract = KittyInterface(ckAddress);
+  KittyInterface kittyContract;
+
+  function setKittyContractAddress(address _address) external onlyOwner {
+    kittyContract = KittyInterface(_address);
+  }
+
+  function _triggerCooldown(Zombie storage _zombie) internal {
+    _zombie.readyTime = uint32(now + cooldownTime);
+  }
 
   function feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) public {
     require(msg.sender == zombieToOwner[_zombieId]);
     Zombie storage myZombie = zombies[_zombieId];
     _targetDna = _targetDna % dnaModulus;
     uint newDna = (myZombie.dna + _targetDna) / 2;
-    if(keccak256(abi.encodePacked(_species)) == keccak256(abi.encodePacked("kitty"))){
+    if (keccak256(abi.encodePacked(_species)) == keccak256(abi.encodePacked("kitty"))) {
       newDna = newDna - newDna % 100 + 99;
     }
     _createZombie("NoName", newDna);
+    _triggerCooldown(myZombie);
   }
 
   function feedOnKitty(uint _zombieId, uint _kittyId) public {
@@ -38,4 +46,5 @@ contract ZombieFeeding is ZombieFactory {
     (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);
     feedAndMultiply(_zombieId, kittyDna, "kitty");
   }
+
 }
