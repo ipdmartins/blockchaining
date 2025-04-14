@@ -9,6 +9,8 @@
 	<ol>
 		<li>
 			**Solidity: Beginner to Intermediate Smart Contracts**
+			- https://share.cryptozombies.io/en/lesson/3/share/Igor?id=Y3p8NjQ4NzYz
+			
 		</li> 	
 	</ol>
 </p>
